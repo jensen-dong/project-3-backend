@@ -5,7 +5,7 @@ const verifyToken = require("../middleware/verify-token");
 const mongoose = require('mongoose')
 
 // Get user profile
-router.get("/:id", verifyToken, async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
         if (!user) {
