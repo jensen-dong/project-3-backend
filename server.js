@@ -1,10 +1,11 @@
 const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-dotenv.config();
 
+app.use(express.json());
 //Mongo Connection
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -13,22 +14,22 @@ mongoose.connection.on("connected", () => {
 });
 
 //MW
-app.use(express.json());
+
 app.use(cors());
 
 //Controllers
 const testJWTRouter = require("./controllers/test-jwt");
 const usersRouter = require("./controllers/users");
 const profilesRouter = require("./controllers/profiles");
-const listingsRouter = require("./controllers/listings")
-const reviewsRouter = require("./controllers/reviews")
+/* const listingsRouter = require("./controllers/listings")
+const reviewsRouter = require("./controllers/reviews") */
 
 //Routes
 app.use("/test-jwt", testJWTRouter);
 app.use("/users", usersRouter);
 app.use("/profiles", profilesRouter);
-app.use("listings", listingsRouter)
-app.use("reviews", reviewsRouter)
+/* app.use("listings", listingsRouter)
+app.use("reviews", reviewsRouter) */
 
 //Listen
 app.listen(3000, () => {
