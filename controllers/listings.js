@@ -74,7 +74,7 @@ router.delete("/:id", verifyToken, verifyHost, async (req, res) => {
         if (!listing) {
             return res.status(404).json({ error: "Listing not found" });
         }
-        if (listing.owner.toString() !== req.user._id) {
+        if (listing.owner.toString() !== req.user._id.toString()) {
             // only owner of listing can delete
             return res.status(401).json({ error: "Unauthorized" });
         }
