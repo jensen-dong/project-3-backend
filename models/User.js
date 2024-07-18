@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs"); //Doesn't seem to be needed for JWT, but this was here for the Express Auth.
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -7,16 +7,42 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    hashedPassword: {
+    firstName: {
         type: String,
         required: true,
     },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    phone_number: {
+        type: String,
+        required: true,
+    },
+    bio: {
+        type: String,
+    },
+    address: {
+        type: String,
+    },
+    isHost: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-// Remove hashedPassword from being viewed in Postman/Console/Route, whatever.
 userSchema.set("toJSON", {
     transform: (document, returnedObject) => {
-        delete returnedObject.hashedPassword;
+        delete returnedObject.password;
     },
 });
 

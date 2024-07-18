@@ -1,20 +1,44 @@
 const express = require("express");
 const router = express.Router();
-const user = require("../models/User");
+const User = require("../models/User");
 const verifyToken = require("../middleware/verify-token");
+const mongoose = require('mongoose')
 
-router.get("/:userId", verifyToken, async (req, res) => {
+// Get user profile
+router.get("/", verifyToken, async (req, res) => {
     try {
-        if (req.user._id !== req.params.userId) {
-            return res.status(401).json({ error: "Unauthorized" });
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
-        res.json({ user });
+        res.json(user);
     } catch (error) {
-        if (res.statusCode === 404) {
-            res.status(404).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update user profile
+router.put("/", verifyToken, async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
         }
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.delete("/", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.user._id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json({ message: "User profile deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
