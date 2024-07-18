@@ -8,22 +8,33 @@ const SALT_LENGTH = 12;
 
 router.post("/signup", async (req, res) => {
     try {
-        // Check if the username is already taken
         const userInDatabase = await User.findOne({ username: req.body.username });
         if (userInDatabase) {
-            return res.json({ error: "Username already taken." });
+            return res.status(400).json({ error: "Username already taken." });
         }
-        // Create a new user with hashed password
-        const user = await User.create({
+        const userByEmail = await User.findOne({ email: req.body.email });
+        if (userByEmail) {
+            return res.status(400).json({ error: "Email already in use." });
+        }
+        const user = new User({
             username: req.body.username,
-            hashedPassword: bcrypt.hashSync(req.body.password, SALT_LENGTH),
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, SALT_LENGTH),
+            phone_number: req.body.phone_number,
+            bio: req.body.bio,
+            address: req.body.address,
+            isHost: req.body.isHost || false,
         });
-        const token = jwt.sign({ username: user.username, _id: user._id }, process.env.JWT_SECRET);
-        res.status(201).json({ user, token });
+        const savedUser = await user.save();
+        const token = jwt.sign({ username: savedUser.username, _id: savedUser._id }, process.env.JWT_SECRET);
+        res.status(201).json({ user: savedUser, token });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
+
 
 router.post("/signin", async (req, res) => {
     try {
