@@ -21,14 +21,14 @@ const testJWTRouter = require("./controllers/test-jwt");
 const usersRouter = require("./controllers/users");
 const profilesRouter = require("./controllers/profiles");
 const listingsRouter = require("./controllers/listings");
-// const reviewsRouter = require("./controllers/reviews")
+const reviewsRouter = require("./controllers/reviews")
 
 //Routes
 app.use("/test-jwt", testJWTRouter);
 app.use("/users", usersRouter);
 app.use("/profiles", profilesRouter);
 app.use("/listings", listingsRouter);
-// app.use("reviews", reviewsRouter)
+app.use("/reviews", reviewsRouter)
 
 //Listen
 app.listen(3000, () => {
