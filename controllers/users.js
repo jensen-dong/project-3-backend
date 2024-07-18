@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const SALT_LENGTH = 12;
 
+
 router.post("/signup", async (req, res) => {
     try {
         const userInDatabase = await User.findOne({ username: req.body.username });
@@ -38,13 +39,20 @@ router.post("/signup", async (req, res) => {
 
 router.post("/signin", async (req, res) => {
     try {
-        const user = await User.findOne({ username: req.body.username });
-        if (user && bcrypt.compareSync(req.body.password, user.hashedPassword)) {
-            const token = jwt.sign(
-                { username: user.username, _id: user._id },
-                process.env.JWT_SECRET
-            );
-            res.status(200).json({ token });
+        const { username, password } = req.body;
+
+        const user = await User.findOne({ username });
+
+        if (user) {
+            if (bcrypt.compareSync(password, user.password)) {
+                const token = jwt.sign(
+                    { username: user.username, _id: user._id },
+                    process.env.JWT_SECRET
+                );
+                res.status(200).json({ token });
+            } else {
+                res.status(401).json({ error: "Invalid username or password." });
+            }
         } else {
             res.status(401).json({ error: "Invalid username or password." });
         }
