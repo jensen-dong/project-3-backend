@@ -19,7 +19,12 @@ const listingSchema = new mongoose.Schema(
             required: true,
         },
         images: [String],
-        availability_dates: [Date],
+        availabile_dates: [Date],
+        isBooked: {
+            type: Boolean,
+            default: false,
+            required: true,
+        },
         owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
