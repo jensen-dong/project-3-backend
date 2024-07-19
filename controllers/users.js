@@ -29,7 +29,7 @@ router.post("/signup", async (req, res) => {
             isHost: req.body.isHost || false,
         });
         const savedUser = await user.save();
-        const token = jwt.sign({ username: savedUser.username, _id: savedUser._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ username: savedUser.username, _id: savedUser._id, isHost: savedUser.isHost }, process.env.JWT_SECRET);
         res.status(201).json({ user: savedUser, token });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -46,7 +46,7 @@ router.post("/signin", async (req, res) => {
         if (user) {
             if (bcrypt.compareSync(password, user.password)) {
                 const token = jwt.sign(
-                    { username: user.username, _id: user._id },
+                    { username: user.username, _id: user._id, isHost: user.isHost },
                     process.env.JWT_SECRET
                 );
                 res.status(200).json({ token });
