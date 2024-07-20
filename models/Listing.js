@@ -19,7 +19,7 @@ const listingSchema = new mongoose.Schema(
             required: true,
         },
         images: [String],
-        availabile_dates: [Date],
+        available_dates: [Date],
         isBooked: {
             type: Boolean,
             default: false,
