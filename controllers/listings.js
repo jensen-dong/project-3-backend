@@ -25,6 +25,28 @@ router.get("/", async (req, res) => {
     }
 });
 
+//Search
+router.get("/search", async (req, res) => {
+    try {
+        const query = req.query.q;
+        // console.log("search q", query);
+        const listings = await Listing.find({
+            $or: [
+                { title: { $regex: query, $options: "i" } },
+                { description: { $regex: query, $options: "i" } },
+                { "location.city": { $regex: query, $options: "i" } },
+                { "location.state": { $regex: query, $options: "i" } },
+                { "location.country": { $regex: query, $options: "i" } },
+            ],
+        });
+        // console.log("listings", listings);
+        res.status(200).json(listings);
+    } catch (err) {
+        console.error("Error during search:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get listings posted by User (verified host)
 router.get("/mylistings", verifyToken, verifyHost, async (req, res) => {
     try {
@@ -35,11 +57,10 @@ router.get("/mylistings", verifyToken, verifyHost, async (req, res) => {
     }
 });
 
-
 // Get a listing by ID
 router.get("/:id", async (req, res) => {
     try {
-        const listing = await Listing.findById(req.params.id);
+        const listing = await Listing.findById(req.params.id).populate('owner', 'username');
         if (!listing) {
             return res.status(404).json({ error: "Listing not found" });
         }
@@ -48,7 +69,6 @@ router.get("/:id", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 
 // Update listing (verified host)
 router.put("/:id", verifyToken, verifyHost, async (req, res) => {
