@@ -25,6 +25,17 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Get listings posted by User (verified host)
+router.get("/mylistings", verifyToken, verifyHost, async (req, res) => {
+    try {
+        const listings = await Listing.find({ owner: req.user._id });
+        res.status(200).json(listings);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 // Get a listing by ID
 router.get("/:id", async (req, res) => {
     try {
@@ -38,15 +49,6 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Get listings posted by User (verified host)
-router.get("/mylistings", verifyToken, verifyHost, async (req, res) => {
-    try {
-        const listings = await Listing.find({ owner: req.user._id });
-        res.status(200).json(listings);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
 // Update listing (verified host)
 router.put("/:id", verifyToken, verifyHost, async (req, res) => {
