@@ -9,7 +9,7 @@ router.post("/", verifyToken, async (req, res) => {
     try {
         const { name, listingId, startDate, endDate } = req.body;
         const listing = await Listing.findById(listingId);
-        
+
         if (!listing) {
             return res.status(404).json({ error: "Listing not found." });
         }
@@ -35,7 +35,7 @@ router.post("/", verifyToken, async (req, res) => {
 // View all bookings made by user
 router.get("/mybookings", verifyToken, async (req, res) => {
     try {
-        const bookings = await Booking.find({ user: req.user._id });
+        const bookings = await Booking.find({ user: req.user._id }).populate("listing");
         res.status(200).json(bookings);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -46,7 +46,7 @@ router.get("/mybookings", verifyToken, async (req, res) => {
 router.get("/:id", verifyToken, async (req, res) => {
     try {
         const booking = await Booking.findById(req.params.id)
-            .populate("listing", "title description price location images")
+            .populate("listing")
             .populate("user", "username email");
 
         res.status(200).json(booking);
