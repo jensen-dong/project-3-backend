@@ -8,30 +8,54 @@ const Listing = require("../models/Listing");
 const mongoose = require("mongoose");
 
 //Create a review by verifies user 
-router.post("/", verifyToken, async(req, res) => {
+// router.post("/", verifyToken, async(req, res) => {
 
 
    
-    try {
-       const { content , rating } = req.body
+//     try {
+//        const { content , rating, } = req.body
 
-           const user = req.user;
-           const listing = await Listing.findOne( {owner: user._id});
+//            const user = req.user;
+//            const listing = await Listing.findOne( {owner: user._id});
         
-           if(!listing) {
-            return res.status(404).json({ error: "No listing found for the authenticated user"});
-           };
+//            if(!listing) {
+//             return res.status(404).json({ error: "No listing found for the authenticated user"});
+//            };
 
-           const newReview = new Review({
-           content,  rating, listing: listing._id, user: user._id
-           });
+//            const newReview = new Review({
+//            content,  rating, listing: listing._id, user: user._id
+//            });
 
-           await newReview.save();
-            res.status(201).json(newReview)
+//            await newReview.save();
+//             res.status(201).json(newReview)
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// })
+
+router.post("/", verifyToken, async (req, res) => {
+    try {
+        const { content, rating, listingId } = req.body;
+        const user = req.user;
+
+        const listing = await Listing.findById(listingId);
+        if (!listing) {
+            return res.status(404).json({ error: "Listing not found" });
+        }
+
+        const newReview = new Review({
+            content,
+            rating,
+            listing: listingId,
+            user: user._id
+        });
+
+        await newReview.save();
+        res.status(201).json(newReview);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-})
+});
 
 //Getting all reviews
 router.get( "/", async ( req, res) => {
@@ -56,6 +80,19 @@ router.get("/:id",  async( req, res) => {
         res.status(500).json({error: error.message})
     }
 });
+
+//Getting reviews by applying listingId to use in frontend
+router.get("/find/:listingId", async(req, res) => {
+    try {
+        
+    const reviews = await Review.find( {listing: req.params.listingId});
+    
+    res.json(reviews);
+
+    } catch (error) {
+        console.log("error", error)
+    }
+})
 
 //user can update reviews
 router.put("/:id", verifyToken, async(req, res) => {
