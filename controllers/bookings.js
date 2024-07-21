@@ -7,10 +7,9 @@ const Booking = require("../models/Booking");
 // Create booking
 router.post("/", verifyToken, async (req, res) => {
     try {
-        console.log(req.body); 
-        const { name, listingId } = req.body;
+        const { name, listingId, startDate, endDate } = req.body;
         const listing = await Listing.findById(listingId);
-        console.log(`Received listingId: ${listingId}`); // Debug line
+        
         if (!listing) {
             return res.status(404).json({ error: "Listing not found." });
         }
@@ -21,6 +20,8 @@ router.post("/", verifyToken, async (req, res) => {
             name,
             listing: listingId,
             user: req.user._id,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
         });
         await newBooking.save();
         listing.isBooked = true;
@@ -42,19 +43,17 @@ router.get("/mybookings", verifyToken, async (req, res) => {
 });
 
 // View all bookings by id
-router.get("/:id", verifyToken, async(req, res) => {
-
+router.get("/:id", verifyToken, async (req, res) => {
     try {
-        
         const booking = await Booking.findById(req.params.id)
-        .populate("listing", "title description price location images")
-        .populate("user", "username email");
+            .populate("listing", "title description price location images")
+            .populate("user", "username email");
 
         res.status(200).json(booking);
     } catch (error) {
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message });
     }
-})
+});
 
 // Cancel/delete booking
 router.delete("/:id", verifyToken, async (req, res) => {
