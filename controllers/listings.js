@@ -18,13 +18,12 @@ router.post("/", verifyToken, verifyHost, async (req, res) => {
 // Get all listings
 router.get("/", async (req, res) => {
     try {
-        const listings = await Listing.find();
+        const listings = await Listing.find().populate('owner', 'username');
         res.status(200).json(listings);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
 //Search
 router.get("/search", async (req, res) => {
     try {
