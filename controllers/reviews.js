@@ -8,30 +8,6 @@ const Listing = require("../models/Listing");
 const mongoose = require("mongoose");
 
 //Create a review by verifies user 
-// router.post("/", verifyToken, async(req, res) => {
-
-
-   
-//     try {
-//        const { content , rating, } = req.body
-
-//            const user = req.user;
-//            const listing = await Listing.findOne( {owner: user._id});
-        
-//            if(!listing) {
-//             return res.status(404).json({ error: "No listing found for the authenticated user"});
-//            };
-
-//            const newReview = new Review({
-//            content,  rating, listing: listing._id, user: user._id
-//            });
-
-//            await newReview.save();
-//             res.status(201).json(newReview)
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// })
 
 router.post("/", verifyToken, async (req, res) => {
     try {
