@@ -55,6 +55,23 @@ router.get("/:id", verifyToken, async (req, res) => {
     }
 });
 
+//Update bboking
+router.put("/:id", async(req, res) => {
+    try {
+        
+        const booking = await Booking.findById(req.params.id);
+        if(!booking) {
+            return res.status(404).json({ error: "No booking available"});
+        };
+        Object.assign(booking, req.body);
+
+        await booking.save();
+        res.status(200).json(booking)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
 // Cancel/delete booking
 router.delete("/:id", verifyToken, async (req, res) => {
     try {
