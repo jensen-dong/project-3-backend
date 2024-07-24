@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require("../models/User");
 const Listing = require("../models/Listing");
 const verifyToken = require("../middleware/verify-token");
-const mongoose = require("mongoose");
 
 // Get user profile
 router.get("/", verifyToken, async (req, res) => {
@@ -12,7 +11,6 @@ router.get("/", verifyToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    // convert user to json and prep to be modified and add listings to json
     const profile = user.toJSON();
     if (user.isHost) {
       const listings = await Listing.find({ owner: req.user._id });

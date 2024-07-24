@@ -18,7 +18,7 @@ router.post("/", verifyToken, verifyHost, async (req, res) => {
 // Get all listings
 router.get("/", async (req, res) => {
     try {
-        const listings = await Listing.find().populate('owner', 'username');
+        const listings = await Listing.find().populate("owner", "username");
         res.status(200).json(listings);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -28,7 +28,6 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
     try {
         const query = req.query.q;
-        // console.log("search q", query);
         const listings = await Listing.find({
             $or: [
                 { title: { $regex: query, $options: "i" } },
@@ -38,7 +37,6 @@ router.get("/search", async (req, res) => {
                 { "location.country": { $regex: query, $options: "i" } },
             ],
         });
-        // console.log("listings", listings);
         res.status(200).json(listings);
     } catch (err) {
         console.error("Error during search:", err.message);
@@ -59,7 +57,7 @@ router.get("/mylistings", verifyToken, verifyHost, async (req, res) => {
 // Get a listing by ID
 router.get("/:id", async (req, res) => {
     try {
-        const listing = await Listing.findById(req.params.id).populate('owner', 'username');
+        const listing = await Listing.findById(req.params.id).populate("owner", "username");
         if (!listing) {
             return res.status(404).json({ error: "Listing not found" });
         }
@@ -80,7 +78,7 @@ router.put("/:id", verifyToken, verifyHost, async (req, res) => {
             // only owner of listing can update/edit
             return res.status(401).json({ error: "You are not the owner of this listing!" });
         }
-        Object.assign(listing, req.body); // this will make the non-edited fields stay as is without needing to enter them all in again
+        Object.assign(listing, req.body);
         await listing.save();
         res.status(200).json(listing);
     } catch (err) {
@@ -96,7 +94,6 @@ router.delete("/:id", verifyToken, verifyHost, async (req, res) => {
             return res.status(404).json({ error: "Listing not found" });
         }
         if (listing.owner.toString() !== req.user._id.toString()) {
-            // only owner of listing can delete
             return res.status(401).json({ error: "Unauthorized" });
         }
         await Listing.findByIdAndDelete(req.params.id);
